@@ -13,12 +13,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Repository
-@RequiredArgsConstructor
+@RequiredArgsConstructor // 필수 필드만 생성자 주입
 public class ProductRepository implements IProductRepositoryPort {
     private static final Map<Long, Product> store = new HashMap<>();
     private final AtomicLong sequence = new AtomicLong(0);
 
-    @PostConstruct
+    @PostConstruct // 의존성 주입 후 자동 실행되도록 함(초기화용)
     public void init() {
         Category laptop = new Category(1L, "노트북");
         Category toothpaste = new Category(2L, "치약");
@@ -40,7 +40,7 @@ public class ProductRepository implements IProductRepositoryPort {
     @Override
     public Optional<Product> findById(Long productId) {
         return Optional.ofNullable(store.get(productId));
-    }
+    } // Optional.ofNullable: null일 수도 있는 값을 감싸는 Optional 객체 생성
 
     @Override
     public List<Product> findAll() {
@@ -50,8 +50,9 @@ public class ProductRepository implements IProductRepositoryPort {
     @Override
     public List<Product> findByKeyword(String keyword) {
         return store.values().stream()
+                // toLowerCase() -> 상품 이름 소문자로 변경, 키워드도 변경하여 같은 조건 하에 포함 여부 검사
                 .filter(product -> product.getName().toLowerCase().contains(keyword.toLowerCase()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); // 필터링된 Product들로 새로운 List<Product> 생성
     }
 
     @Override
