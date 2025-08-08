@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,8 +27,10 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<UserResponseDto>> users() {
-        List<UserResponseDto> users = userService.findAll();
+    public ResponseEntity<List<UserResponseDto>> users(@RequestParam(required = false) String username) {
+        List<UserResponseDto> users = Optional.ofNullable(username)
+                .map(userService::findByUsername)
+                .orElseGet(userService::findAll);
         return ResponseEntity.ok(users);
     }
 
