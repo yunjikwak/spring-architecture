@@ -1,11 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.controller.dto.UserCreateRequestDto;
-import com.example.demo.controller.dto.UserResponseDto;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.repository.entity.User;
+import com.example.demo.controller.user.dto.UserCreateRequestDto;
+import com.example.demo.controller.user.dto.UserResponseDto;
+import com.example.demo.repository.user.UserRepository;
+import com.example.demo.repository.user.entity.User;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,12 +16,29 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
+    @PostConstruct
+    public void init() {
+        this.save(new UserCreateRequestDto("aaron", "123", "Aaron", 10, "DEVELOPER", "Backend"));
+        this.save(new UserCreateRequestDto("baron", "123", "Baron", 20, "DEVELOPER", "Frontend"));
+        this.save(new UserCreateRequestDto("caron", "123", "Caron", 30, "ENGINEER", "DevOps/SRE"));
+    }
+
+    @Transactional
     public UserResponseDto findById(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("유저가 데이터베이스 내 존재하지 않습니다. 유저 id : " + id));
         return UserResponseDto.from(user);
     }
 
+    @Transactional
+    public List<UserResponseDto> findByUsername(String username) {
+        List<User> users = userRepository.findByName(username);
+        return users.stream()
+                .map(UserResponseDto::from)
+                .toList();
+    }
+
+    @Transactional
     public List<UserResponseDto> findAll() {
         return userRepository.findAll()
                 .stream()
@@ -27,6 +46,7 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public UserResponseDto save(UserCreateRequestDto request) {
         User user = User.create(
                 request.getUsername(),
@@ -41,6 +61,6 @@ public class UserService {
     }
 
     public void delete(Integer id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 }

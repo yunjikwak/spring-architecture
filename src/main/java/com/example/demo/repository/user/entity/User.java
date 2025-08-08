@@ -1,17 +1,19 @@
-package com.example.demo.repository.entity;
+package com.example.demo.repository.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@ToString
+@Entity
+@EqualsAndHashCode(of = "id")
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
-    @Setter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String username;
     private String password;
@@ -20,6 +22,15 @@ public class User {
     private String job;
     private String specialty;
     private LocalDateTime createdAt;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Allocated> allocates;
+
+//  @OneToMany(fetch = FetchType.LAZY, mappedBy = "created_by")
+//  private List<Post> post;
+
+//  @OneToMany(fetch = FetchType.LAZY, mappedBy = "updated_by")
+//  private List<Post> post;
 
     public static User create(String username, String password, String name, Integer age, String job, String specialty) {
         return new User(
@@ -30,7 +41,8 @@ public class User {
                 age,
                 job,
                 specialty,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
     }
 }
