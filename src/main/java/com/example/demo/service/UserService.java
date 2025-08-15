@@ -2,7 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.controller.dto.UserCreateRequestDto;
 import com.example.demo.controller.dto.UserResponseDto;
+import com.example.demo.repository.TeamRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.entity.Team;
 import com.example.demo.repository.entity.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
     @PostConstruct
     public void init() {
-        this.save(new UserCreateRequestDto("aaron", "123", "Aaron", 10, "DEVELOPER", "Backend"));
-        this.save(new UserCreateRequestDto("baron", "123", "Baron", 20, "DEVELOPER", "Frontend"));
-        this.save(new UserCreateRequestDto("caron", "123", "Caron", 30, "ENGINEER", "DevOps/SRE"));
+        Team A = teamRepository.save(Team.create("A Team"));
+        Team B = teamRepository.save(Team.create("B Team"));
+
+        User aaron = User.create("aaron", "123", "Aaron", 10, "DEVELOPER", "Backend");
+        User baron = User.create("baron", "123", "Baron", 20, "DEVELOPER", "Frontend");
+        User caron = User.create("caron", "123", "Caron", 30, "ENGINEER", "DevOps/SRE");
+
+        aaron.assignTeam(A);
+        baron.assignTeam(A);
+        caron.assignTeam(B);
+
+        userRepository.save(aaron);
+        userRepository.save(baron);
+        userRepository.save(caron);
     }
 
     public UserResponseDto findById(Integer id) {
