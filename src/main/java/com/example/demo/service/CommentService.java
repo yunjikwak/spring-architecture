@@ -8,11 +8,14 @@ import com.example.demo.repository.post.entity.Comment;
 import com.example.demo.repository.post.entity.Post;
 import com.example.demo.repository.user.UserRepository;
 import com.example.demo.repository.user.entity.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
@@ -20,7 +23,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentResponseDto save(CommentCreateRequestDto request) {
+    public CommentResponseDto save(@Valid CommentCreateRequestDto request) {
         // 원본글 Post 조회
         Integer postId = request.getPostId();
         Post post = postRepository.findById(postId)
